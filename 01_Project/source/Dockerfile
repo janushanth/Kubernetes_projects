@@ -1,18 +1,18 @@
-# Use official Python image
-FROM python:3.11
+# Use the official Python image as base
+FROM python:3.12
 
-# Set the working directory inside the container
-WORKDIR /app/source
+# Set the working directory in the container
+WORKDIR /app
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the application source code
+COPY . /app
 
-# Copy the entire Django project into the container
-COPY . .
+# Install dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install -r requirements.txt
 
-# Expose port 8000 for Django
+# Expose the port Django runs on
 EXPOSE 8000
 
-# Run migrations and start the server
+# Run migrations and start Django application
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

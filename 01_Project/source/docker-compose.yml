@@ -1,11 +1,12 @@
-version: '3'
+version: '3.8'
+
 services:
-  web:
-    build: .
-    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/app
+  django:
+    image: my-django-app  # Replace with your Docker image name
     ports:
-      - "8000:8000"
+      - "8000:8000"       # Exposes port 8000 on the host and container
     environment:
-      - PYTHONUNBUFFERED=1
+      - DEBUG=True        # Optionally set environment variables if needed
+    volumes:
+      - .:/app            # Optional: mount current directory to /app inside the container (useful for development)
+

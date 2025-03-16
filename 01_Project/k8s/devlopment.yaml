@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  namespace: mynamespace  # Reference the namespace here
+spec:
+  replicas: 1  # Adjust based on the number of replicas you want
+  selector:
+    matchLabels:
+      app: django-app
+  template:
+    metadata:
+      labels:
+        app: django-app
+    spec:
+      containers:
+        - name: django
+          image: my-django-app  # Replace with your Docker image name
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEBUG
+              value: "True"  # Optional environment variable
+          volumeMounts:
+            - name: app-volume
+              mountPath: /app
+      volumes:
+        - name: app-volume
+          hostPath:
+            path: /path/to/your/local/app  # Optional: Mount a local path if necessary
+            type: Directory
