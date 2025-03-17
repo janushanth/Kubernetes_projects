@@ -138,16 +138,16 @@
 // //     }
 // // }
 
-
 pipeline {
     agent any
-    
+
     environment {
         DOCKER_IMAGE = "gobiit/my-django-app"
         DOCKER_TAG = "latest"
         DOCKER_CREDENTIALS_ID = "docker-hub-credentials-id"
+        JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"  // Add this line
     }
-    
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -159,8 +159,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image from the 'source' folder
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", "source")
+                    // Build the Docker image from the current directory (or specify the correct folder)
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}", ".")
                 }
             }
         }

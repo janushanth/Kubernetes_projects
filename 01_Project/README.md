@@ -64,3 +64,32 @@ sudo apt-get update
  sudo usermod -aG docker jenkins
  
  -->
+
+<!-- 
+ groovy
+
+ sudo apt update
+sudo apt install groovy -->
+
+
+<!-- java -version
+
+export JAVA_HOME=/usr/lib/jvm/default-java
+
+sudo nano /etc/environment
+
+
+JAVA_HOME="/usr/lib/jvm/default-java"
+
+
+source /etc/environment
+
+
+java -version
+groovy -version
+
+
+sudo systemctl restart jenkins -->
+
+
+
