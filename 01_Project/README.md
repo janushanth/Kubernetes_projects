@@ -18,9 +18,7 @@ ssh -T git@github.com -->
 sudo apt update
 sudo apt install fontconfig openjdk-17-jre
 java -version
-openjdk version "17.0.13" 2024-10-15
-OpenJDK Runtime Environment (build 17.0.13+11-Debian-2)
-OpenJDK 64-Bit Server VM (build 17.0.13+11-Debian-2, mixed mode, sharing) -->
+ -->
 
 <!-- jenkins
 
@@ -30,12 +28,15 @@ echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
   /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update
-sudo apt-get install jenkins -->
-
-<!-- sudo systemctl enable jenkins
+sudo apt-get install jenkins
+ sudo systemctl enable jenkins
 sudo systemctl start jenkins
-sudo systemctl status jenkins -->
-<!-- sudo cat /var/lib/jenkins/secrets/initialAdminPassword -->
+sudo systemctl status jenkins 
+
+ sudo cat /var/lib/jenkins/secrets/initialAdminPassword 
+
+
+-->
 
 
 <!-- 
@@ -93,3 +94,25 @@ sudo systemctl restart jenkins -->
 
 
 
+<!-- #!/bin/bash
+
+# Define your Docker Hub credentials and repository details
+DOCKER_USERNAME="g2k2@live.com"
+DOCKER_PASSWORD="123@Intel"
+DOCKER_IMAGE_NAME="my-docker-app"
+DOCKER_OWNER="gobikrishnan"
+
+# Set the Docker tag using the current date and time
+DOCKER_TAG=$(date "+%Y%m%d%H%M%S")
+
+# Log in to Docker Hub
+echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin > /dev/null 2>&1
+
+# Navigate to the directory containing the Dockerfile
+cd /var/lib/jenkins/workspace/01_myproject/01_Project/source
+
+# Build the Docker image
+docker build -t $DOCKER_OWNER/$DOCKER_IMAGE_NAME:$DOCKER_TAG .
+
+# Push the Docker image to Docker Hub
+docker push $DOCKER_OWNER/$DOCKER_IMAGE_NAME:$DOCKER_TAG -->
