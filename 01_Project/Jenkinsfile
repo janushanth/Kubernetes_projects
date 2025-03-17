@@ -1,0 +1,195 @@
+// pipeline {
+//     agent any
+
+//     environment {
+//         DOCKER_IMAGE = "my-django-app"               // Name of your Docker image
+//         DOCKER_REGISTRY = "docker.io"                // Docker registry (Docker Hub)
+//         VERSION = "1.0.0"                            // Initial version
+//     }
+
+//     stages {
+//         stage('Checkout') {
+//             steps {
+//                 checkout scm
+//             }
+//         }
+
+//         stage('Build Docker Image') {
+//             steps {
+//                 script {
+//                     // Build Docker image with the version tag
+//                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION} ."
+//                 }
+//             }
+//         }
+
+//         stage('Push Docker Image') {
+//             steps {
+//                 script {
+//                     // Login to Docker Hub using credentials stored in Jenkins
+//                     withCredentials([usernamePassword(credentialsId: 'docker-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+//                     }
+                    
+//                     // Push the Docker image to Docker Hub
+//                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION}"
+//                 }
+//             }
+//         }
+
+//         stage('Increment Version') {
+//             steps {
+//                 script {
+//                     // Increment the version (you can modify this logic for different versioning schemes)
+//                     def newVersion = VERSION.tokenize('.').last().toInteger() + 1
+//                     VERSION = "1.0.${newVersion}"
+//                 }
+//             }
+//         }
+//     }
+
+//     post {
+//         always {
+//             // Clean up or additional actions
+//             echo "Build and push process completed."
+//         }
+//     }
+// }
+
+
+
+
+// // pipeline {
+// //     agent any
+
+// //     environment {
+// //         DOCKER_IMAGE = "my-django-app"               // Name of your Docker image
+// //         DOCKER_REGISTRY = "docker.io"                // Docker registry (Docker Hub)
+// //         VERSION = "1.0.0"                            // Initial version
+// //         K8S_DEPLOY_FILE = "k8s/deployment.yaml"      // Path to your Kubernetes deployment file
+// //     }
+
+// //     stages {
+// //         stage('Checkout') {
+// //             steps {
+// //                 checkout scm
+// //             }
+// //         }
+
+// //         stage('Build Docker Image') {
+// //             steps {
+// //                 script {
+// //                     // Build Docker image with the version tag
+// //                     sh "docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION} ."
+// //                 }
+// //             }
+// //         }
+
+// //         stage('Push Docker Image') {
+// //             steps {
+// //                 script {
+// //                     // Login to Docker Hub using credentials stored in Jenkins
+// //                     withCredentials([usernamePassword(credentialsId: 'docker-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+// //                         sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+// //                     }
+                    
+// //                     // Push the Docker image to Docker Hub
+// //                     sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION}"
+// //                 }
+// //             }
+// //         }
+
+// //         stage('Update Kubernetes Deployment') {
+// //             steps {
+// //                 script {
+// //                     // Update the Kubernetes deployment file with the new image and version
+// //                     sh """
+// //                     sed -i 's|image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:.*|image: ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${VERSION}|g' ${K8S_DEPLOY_FILE}
+// //                     """
+// //                 }
+// //             }
+// //         }
+
+// //         stage('Deploy to Kubernetes') {
+// //             steps {
+// //                 script {
+// //                     // Deploy the updated image to Kubernetes
+// //                     sh "kubectl apply -f ${K8S_DEPLOY_FILE}"
+// //                 }
+// //             }
+// //         }
+
+// //         stage('Increment Version') {
+// //             steps {
+// //                 script {
+// //                     // Increment the version (you can modify this logic for different versioning schemes)
+// //                     def newVersion = VERSION.tokenize('.').last().toInteger() + 1
+// //                     VERSION = "1.0.${newVersion}"
+// //                 }
+// //             }
+// //         }
+// //     }
+
+// //     post {
+// //         always {
+// //             // Clean up or additional actions
+// //             echo "Build and deploy process completed."
+// //         }
+// //     }
+// // }
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "gobiit/my-django-app"
+        DOCKER_TAG = "latest" // You can change this to a dynamic tag if needed
+        DOCKER_CREDENTIALS_ID = "docker-id" // The ID of your Docker Hub credentials in Jenkins
+    }
+    
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Checkout your Git repository
+                git 'https://github.com/janushanth/Kubernetes_projects.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // Login to Docker Hub using Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                            echo \$DOCKER_PASSWORD | docker login --username \$DOCKER_USERNAME --password-stdin
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to Docker Hub
+                    docker.push("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up Docker images (optional)
+            sh 'docker system prune -f'
+        }
+    }
+}
