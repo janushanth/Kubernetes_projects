@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: django-container
-          image: my-docker-app:latest  # Replace with your actual image name
+          image:  gobikrishnan/my-docker-app  # Replace with your actual image name
           ports:
             - containerPort: 8000
           env:
